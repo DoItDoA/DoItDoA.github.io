@@ -38,7 +38,7 @@ public class Main {
         // 객체 생성 (Car의 인스턴스)
         Car car = new Car();
         car.color = "Red"; // 정의된 필드 사용
-        car1.drive(); // 정의된 메서드 사용
+        car.drive(); // 정의된 메서드 사용
     }
 }
 ```
