@@ -1,8 +1,8 @@
 # main links
 main:
-  - title: "Category"
+  - title: "카테고리"
     url: /categories/
-  - title: "Tag"
+  - title: "태그"
     url: /tags/
   - title: "검색"
     url: /search/
@@ -10,9 +10,9 @@ main:
 docs:
   - title: "목차"
     children:
-      - title: "Category"
+      - title: "카테고리"
         url: /categories/
-      - title: "Tag"
+      - title: "태그"
         url: /tags/
   # - title: "Sample Posts"
   #   url: /year-archive/
