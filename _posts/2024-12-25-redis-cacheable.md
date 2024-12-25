@@ -77,74 +77,8 @@ public class BoardService {
 * cacheManager : Redis의 캐시를 관리하는 [CacheManager](#CacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근  
 <br/>
 <br/>
-#### CacheManager의 구성
-**이 방법은 엔터티의 특정 필드를 직렬화/역직렬화 설정하는 방식**  
-```java
-@Configuration
-@EnableCaching // Spring Boot의 캐싱 설정을 활성화
-public class RedisCacheConfig {
-  @Bean
-  public CacheManager boardCacheManager(RedisConnectionFactory redisConnectionFactory) {
-    RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
-        .defaultCacheConfig()
-	      // Redis에 Key를 저장할 때 String으로 직렬화(변환)해서 저장
-        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-        // Redis에 Value를 저장할 때 Json으로 직렬화(변환)해서 저장
-        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class)))
-        // 데이터의 만료기간(TTL) 설정(1분)
-        .entryTtl(Duration.ofMinutes(1L));
-
-    return RedisCacheManager
-        .RedisCacheManagerBuilder
-        .fromConnectionFactory(redisConnectionFactory)
-        .cacheDefaults(redisCacheConfiguration)
-        .build();
-  }
-}
-
-```
-* 빈에 등록된 [RedisConfig](###간단한-Redis-세팅)의 설정값을 매개변수로 사용  
-* Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
-* @EnableCaching : Spring Boot의 캐싱 설정을 활성화  
-* serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
-  * 문자열로 저장된 key를 가져올 때 역직렬화를 한다.
-  * 만일 설정안하면 key는 바이너리 형태로 저장이 된다.
-* serializeValuesWith는 value 저장시 Jackson2JsonRedisSerializer를 사용하여 Json으로 직렬화해서 저장한다.
-  * Jackson2JsonRedisSerializer는 객체를 JSON 문자열로 변환하여 저장하고, JSON 문자열을 다시 객체로 역직렬화하는 데 사용
-    *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
-  * json으로 저장된 value는 가져올 때 역직렬화를 한다
-  * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
-* entryTtls는 만료시간(TTL) 설정
-  * 1L은 1분을 가리킴  
-<br/>
-**엔터티**
-```java
-@Entity
-@Table(name = "boards")
-@Getter
-public class Board {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String title;
-
-    private String content;
-
-    @JsonFormat(pattern = "yyyy-MM-dd' 'HH:mm:ss")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    private LocalDateTime createdAt;
-}
-```
-* @JsonFormat은 json으로 변환시 원하는 형태로 변환
-* @JsonSerialize은 redis에 value 저장시 LocalDateTime은 적합하지 않기 때문에 직렬화 해줘야함
-* @JsonDeserialize은 redis에 저장된 직렬화 데이터를 역직렬화 해준다.
-  * 역직렬화시 기본적으로 배열형태로 변환하기 때문에 형태를 맞추기 위해 @JsonFormat 사용
-* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러
-<br/>
-<br/>
-**이 방법은 엔터티의 특정 필드를 전역적으로 직렬화/역직렬화 설정하는 방식**
+#### CacheManager의 구성  
+**이 방법은 엔터티의 특정 필드를 전역적으로 직렬화/역직렬화 설정하는 방식**  
 ```java
 @Configuration
 @EnableCaching // Spring Boot의 캐싱 설정을 활성화
@@ -185,3 +119,96 @@ public class RedisCacheConfig {
     *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
   * json으로 저장된 value는 가져올 때 역직렬화를 한다
   * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
+<br/>
+**엔터티**
+```java
+@Entity
+@Table(name = "boards")
+@Getter
+public class Board {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String content;
+
+    private LocalDateTime createdAt;
+}
+```
+* LocalDateTime은 redis에 저장시 적합하지 않은 데이터 타입이지만 ObjectMapper를 통해 커스터마이징하여 변환
+* 역직렬화시 LocalDateTime에 맞추어 변환
+<br/>
+<br/>
+**이 방법은 엔터티의 특정 필드를 직렬화/역직렬화 설정하는 방식**  
+```java
+@Configuration
+@EnableCaching // Spring Boot의 캐싱 설정을 활성화
+public class RedisCacheConfig {
+  @Bean
+  public CacheManager boardCacheManager(RedisConnectionFactory redisConnectionFactory) {
+    RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
+        .defaultCacheConfig()
+	      // Redis에 Key를 저장할 때 String으로 직렬화(변환)해서 저장
+        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+        // Redis에 Value를 저장할 때 Json으로 직렬화(변환)해서 저장
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class)))
+        // 데이터의 만료기간(TTL) 설정(1분)
+        .entryTtl(Duration.ofMinutes(1L));
+
+    return RedisCacheManager
+        .RedisCacheManagerBuilder
+        .fromConnectionFactory(redisConnectionFactory)
+        .cacheDefaults(redisCacheConfiguration)
+        .build();
+  }
+}
+```
+* 빈에 등록된 [RedisConfig](###간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
+* @EnableCaching : Spring Boot의 캐싱 설정을 활성화  
+* serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
+  * 문자열로 저장된 key를 가져올 때 역직렬화를 한다.
+  * 만일 설정안하면 key는 바이너리 형태로 저장이 된다.
+* serializeValuesWith는 value 저장시 Jackson2JsonRedisSerializer를 사용하여 Json으로 직렬화해서 저장한다.
+  * Jackson2JsonRedisSerializer는 객체를 JSON 문자열로 변환하여 저장하고, JSON 문자열을 다시 객체로 역직렬화하는 데 사용
+    *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
+  * json으로 저장된 value는 가져올 때 역직렬화를 한다
+  * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
+* entryTtls는 만료시간(TTL) 설정
+  * 1L은 1분을 가리킴  
+<br/>
+
+**엔터티**  
+```java
+@Entity
+@Table(name = "boards")
+@Getter
+public class Board {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    private String content;
+
+    @JsonFormat(pattern = "yyyy-MM-dd' 'HH:mm:ss")
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime createdAt;
+}
+```  
+
+* @JsonFormat은 json으로 변환시 원하는 형태로 변환
+* @JsonSerialize은 redis에 value 저장시 LocalDateTime은 적합하지 않기 때문에 직렬화 해줘야함
+* @JsonDeserialize은 redis에 저장된 직렬화 데이터를 역직렬화 해준다.
+  * 역직렬화시 기본적으로 배열형태로 변환하기 때문에 형태를 맞추기 위해 @JsonFormat 사용
+* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러
+<br/>
+<br/>
+#### 참고
+@RestController를 통해 객체를 response시 스프링이 LocalDateTime타입은 'yyyy-MM-dd'T'HH:mm:ss' 형태로 자동으로 직렬화하여 내보낸다.  
+반대로 request시에도 자동으로 역직렬화하여 값을 읽어들인다.  
+그래서 단순히 전송시 @JsonSerialize, @JsonDeserialize 사용할 필요는 없다.
