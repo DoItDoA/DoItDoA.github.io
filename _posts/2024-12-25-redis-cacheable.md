@@ -38,8 +38,27 @@ application.properties에 아래 코드 추가
 data.redis.host=localhost
 data.redis.port=6379
 ```
-### Redis 자바 사용코드
-Service의 구성  
+**Redis 세팅**
+```java
+@Configuration
+public class RedisConfig {
+    @Value("${spring.data.redis.host}")
+    private String host;
+
+    @Value("${spring.data.redis.port}")
+    private int port;
+
+    @Bean
+    public LettuceConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
+    }
+}
+```
+Lettuce라는 라이브러리를 활용해 Redis 연결을 관리하는 객체를 생성하고 Redis의 host와 port를 넣는다.  
+<br/>
+<br/>
+### Redis 사용
+**Service의 구성**  
 ```java
 @Service
 @RequiredArgsConstructor
@@ -52,4 +71,46 @@ public class BoardService {
     }
 }
 ```
-@Cacheable은 위 그림의 [ㅁㅁㅁㅁ](#캐시-사용-흐름) 캐시처럼
+* @Cacheable은 [캐시 사용 흐름](#캐시-사용-흐름)처럼 캐시에 데이터가 없으면 DB에서 데이터를 가져온다.  
+* cacheNames : 이름을 지정함으로써 각각의 다른 캐시 공간을 사용한다. 'getBoards'라는 별도의 공간에서 key와 value 사용  
+* key : boards:page:1:size:10 이런 형태로 key가 저장이 되며 #page, #size는 아래의 매개변수 page와 size를 가져와 동적으로 표현  
+* cacheManager : Redis의 캐시를 관리하는 [CacheManager](#CacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근  
+<br/>
+<br/>
+#### CacheManager의 구성(부분)
+이 방법은 특정 엔터티만 redis에 저장하는 방식이다.
+```java
+@Configuration
+@EnableCaching // Spring Boot의 캐싱 설정을 활성화
+public class RedisCacheConfig {
+  @Bean
+  public CacheManager boardCacheManager(RedisConnectionFactory redisConnectionFactory) {
+    RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration
+        .defaultCacheConfig()
+	      // Redis에 Key를 저장할 때 String으로 직렬화(변환)해서 저장
+        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+        // Redis에 Value를 저장할 때 Json으로 직렬화(변환)해서 저장
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class)))
+        // 데이터의 만료기간(TTL) 설정
+        .entryTtl(Duration.ofMinutes(1L));
+
+    return RedisCacheManager
+        .RedisCacheManagerBuilder
+        .fromConnectionFactory(redisConnectionFactory)
+        .cacheDefaults(redisCacheConfiguration)
+        .build();
+  }
+}
+
+```
+* 빈에 등록된 [RedisConfig](###간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
+* @EnableCaching : Spring Boot의 캐싱 설정을 활성화  
+* serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
+  * 문자열로 저장된 key를 가져올 때 역직렬화를 한다.
+  * 만일 설정안하면 key는 바이너리 형태로 저장이 된다.
+* serializeValuesWith는 value 저장시 Jackson2JsonRedisSerializer를 사용하여 Json으로 직렬화해서 저장한다.
+  * Jackson2JsonRedisSerializer는 객체를 JSON 문자열로 변환하여 저장하고, JSON 문자열을 다시 객체로 역직렬화하는 데 사용
+    *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
+  * json으로 저장된 value는 가져올 때 역직렬화를 한다
+  * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
