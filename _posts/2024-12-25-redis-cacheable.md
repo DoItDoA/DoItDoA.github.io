@@ -78,7 +78,7 @@ public class BoardService {
 
 <br/>
 #### CacheManager의 구성  
-**이 방법은 엔터티의 특정 필드를 전역적으로 직렬화/역직렬화 설정하는 방식**  
+**아래의 방법은 엔터티의 특정 필드를 전역적으로 직렬화/역직렬화 설정하는 방식**  
 ```java
 @Configuration
 @EnableCaching // Spring Boot의 캐싱 설정을 활성화
@@ -142,7 +142,7 @@ public class Board {
 * 역직렬화시 LocalDateTime에 맞추어 변환  
 
 <br/>
-**이 방법은 엔터티의 특정 필드를 직렬화/역직렬화 설정하는 방식**  
+**아래의 방법은 엔터티의 특정 필드를 직렬화/역직렬화 설정하는 방식**  
 ```java
 @Configuration
 @EnableCaching // Spring Boot의 캐싱 설정을 활성화
