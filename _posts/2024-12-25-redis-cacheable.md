@@ -52,4 +52,4 @@ public class BoardService {
     }
 }
 ```
-@Cacheable은 위 그림의 [ㅁㅁㅁㅁ](#캐시 사용 흐름) 캐시처럼
+@Cacheable은 위 그림의 [ㅁㅁㅁㅁ](#캐시-사용-흐름) 캐시처럼
