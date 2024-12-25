@@ -77,7 +77,6 @@ public class BoardService {
 * cacheManager : Redis의 캐시를 관리하는 [CacheManager](#cacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근
 
 <br/>
-<br/>
 #### CacheManager의 구성  
 **이 방법은 엔터티의 특정 필드를 전역적으로 직렬화/역직렬화 설정하는 방식**  
 ```java
@@ -140,8 +139,8 @@ public class Board {
 }
 ```
 * LocalDateTime은 redis에 저장시 적합하지 않은 데이터 타입이지만 ObjectMapper를 통해 커스터마이징하여 변환
-* 역직렬화시 LocalDateTime에 맞추어 변환
-<br/>
+* 역직렬화시 LocalDateTime에 맞추어 변환  
+
 <br/>
 **이 방법은 엔터티의 특정 필드를 직렬화/역직렬화 설정하는 방식**  
 ```java
@@ -179,9 +178,9 @@ public class RedisCacheConfig {
   * json으로 저장된 value는 가져올 때 역직렬화를 한다
   * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
 * entryTtls는 만료시간(TTL) 설정
-  * 1L은 1분을 가리킴  
-<br/>
+  * 1L은 1분을 가리킴
 
+<br/>
 **엔터티**  
 ```java
 @Entity
@@ -202,13 +201,12 @@ public class Board {
     private LocalDateTime createdAt;
 }
 ```  
-
 * @JsonFormat은 json으로 변환시 원하는 형태로 변환
 * @JsonSerialize은 redis에 value 저장시 LocalDateTime은 적합하지 않기 때문에 직렬화 해줘야함
 * @JsonDeserialize은 redis에 저장된 직렬화 데이터를 역직렬화 해준다.
   * 역직렬화시 기본적으로 배열형태로 변환하기 때문에 형태를 맞추기 위해 @JsonFormat 사용
-* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러  
-<br/>
+* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러
+
 <br/>
 #### 참고
 @RestController를 통해 객체를 response시 스프링이 LocalDateTime타입은 'yyyy-MM-dd'T'HH:mm:ss' 형태로 자동으로 직렬화하여 내보낸다.  
