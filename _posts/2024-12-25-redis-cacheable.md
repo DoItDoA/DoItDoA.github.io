@@ -74,7 +74,7 @@ public class BoardService {
 * @Cacheable은 [캐시 사용 흐름](#캐시-사용-흐름)처럼 캐시에 데이터가 없으면 DB에서 데이터를 가져온다.  
 * cacheNames : 이름을 지정함으로써 각각의 다른 캐시 공간을 사용한다. 'getBoards'라는 별도의 공간에서 key와 value 사용  
 * key : boards:page:1:size:10 이런 형태로 key가 저장이 되며 #page, #size는 아래의 매개변수 page와 size를 가져와 동적으로 표현  
-* cacheManager : Redis의 캐시를 관리하는 [CacheManager](#cacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근
+* cacheManager : Redis의 캐시를 관리하는 [CacheManager](#cachemanager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근
 
 <br/>
 #### CacheManager의 구성  
