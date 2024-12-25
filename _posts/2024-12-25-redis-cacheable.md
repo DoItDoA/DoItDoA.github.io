@@ -117,7 +117,7 @@ public class RedisCacheConfig {
 2. ObjectMapper를 Jackson2JsonRedisSerializer에 대입
 3. serializeValuesWith는 value 저장시 Jackson2JsonRedisSerializer를 사용하여 Json으로 직렬화해서 저장한다.
   * Jackson2JsonRedisSerializer는 객체를 JSON 문자열로 변환하여 저장하고, JSON 문자열을 다시 객체로 역직렬화하는 데 사용
-    *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
+  * 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환 
   * json으로 저장된 value는 가져올 때 역직렬화를 한다
   * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.  
 
