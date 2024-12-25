@@ -111,7 +111,8 @@ public class RedisCacheConfig {
   * 문자열로 저장된 key를 가져올 때 역직렬화를 한다.
   * 만일 설정안하면 key는 바이너리 형태로 저장이 된다.
 * entryTtls는 만료시간(TTL) 설정
-  * 1L은 1분을 가리킴  
+  * 1L은 1분을 가리킴
+
 1. ObjectMapper를 사용하여 특정 클래스를 커스터마이징한다.
 2. ObjectMapper를 Jackson2JsonRedisSerializer에 대입
 3. serializeValuesWith는 value 저장시 Jackson2JsonRedisSerializer를 사용하여 Json으로 직렬화해서 저장한다.
