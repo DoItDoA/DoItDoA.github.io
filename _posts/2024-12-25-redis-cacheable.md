@@ -74,7 +74,7 @@ public class BoardService {
 * @Cacheable은 [캐시 사용 흐름](#캐시-사용-흐름)처럼 캐시에 데이터가 없으면 DB에서 데이터를 가져온다.  
 * cacheNames : 이름을 지정함으로써 각각의 다른 캐시 공간을 사용한다. 'getBoards'라는 별도의 공간에서 key와 value 사용  
 * key : boards:page:1:size:10 이런 형태로 key가 저장이 되며 #page, #size는 아래의 매개변수 page와 size를 가져와 동적으로 표현  
-* cacheManager : Redis의 캐시를 관리하는 [CacheManager](#CacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근  
+* cacheManager : Redis의 캐시를 관리하는 [CacheManager](#cacheManager의-구성)에 접근한다. 메서드명 boardCacheManager에 접근  
 <br/>
 <br/>
 #### CacheManager의 구성  
@@ -104,7 +104,7 @@ public class RedisCacheConfig {
     }
 }
 ```
-* 빈에 등록된 [RedisConfig](#간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* 빈에 등록된 [RedisConfig](#간단한-redis-세팅)의 설정값을 매개변수로 사용  
 * Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
 * @EnableCaching : Spring Boot의 캐싱 설정을 활성화
 * serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
@@ -166,7 +166,7 @@ public class RedisCacheConfig {
   }
 }
 ```
-* 빈에 등록된 [RedisConfig](#간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* 빈에 등록된 [RedisConfig](#간단한-redis-세팅)의 설정값을 매개변수로 사용  
 * Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
 * @EnableCaching : Spring Boot의 캐싱 설정을 활성화  
 * serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
