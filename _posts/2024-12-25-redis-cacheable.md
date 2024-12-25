@@ -104,7 +104,7 @@ public class RedisCacheConfig {
     }
 }
 ```
-* 빈에 등록된 [RedisConfig](###간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* 빈에 등록된 [RedisConfig](#간단한-Redis-세팅)의 설정값을 매개변수로 사용  
 * Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
 * @EnableCaching : Spring Boot의 캐싱 설정을 활성화
 * serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
@@ -118,7 +118,7 @@ public class RedisCacheConfig {
   * Jackson2JsonRedisSerializer는 객체를 JSON 문자열로 변환하여 저장하고, JSON 문자열을 다시 객체로 역직렬화하는 데 사용
     *  여기서 객체는 엔터티를 가리키고 클래스 형태의 엔터티를 json 형태로 직렬화하여 변환
   * json으로 저장된 value는 가져올 때 역직렬화를 한다
-  * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.
+  * 만일 설정안하면 value는 바이너리 형태로 저장이 된다.  
 
 <br/>
 **엔터티**
@@ -166,7 +166,7 @@ public class RedisCacheConfig {
   }
 }
 ```
-* 빈에 등록된 [RedisConfig](###간단한-Redis-세팅)의 설정값을 매개변수로 사용  
+* 빈에 등록된 [RedisConfig](#간단한-Redis-세팅)의 설정값을 매개변수로 사용  
 * Redis에 접근할 때 데이터를 주고 받는 형식 등을 설정한다.  
 * @EnableCaching : Spring Boot의 캐싱 설정을 활성화  
 * serializeKeysWith는 key 저장시 StringRedisSerializer를 사용하여 String으로 직렬화해서 저장한다.
@@ -206,7 +206,7 @@ public class Board {
 * @JsonSerialize은 redis에 value 저장시 LocalDateTime은 적합하지 않기 때문에 직렬화 해줘야함
 * @JsonDeserialize은 redis에 저장된 직렬화 데이터를 역직렬화 해준다.
   * 역직렬화시 기본적으로 배열형태로 변환하기 때문에 형태를 맞추기 위해 @JsonFormat 사용
-* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러
+* @JsonSerialize, @JsonDeserialize이 없으면 Redis 사용시 에러  
 <br/>
 <br/>
 #### 참고
