@@ -20,24 +20,24 @@ MySQL 기준으로 코드를 작성했습니다.
 WITH RECURSIVE 가상테이블명(컬럼1, 컬럼2, ...) AS
 (
   SELECT 컬럼1활용, 컬럼2활용, ...
-  UNION ALL -- UNION이 사용될 수도 있음
-  SELECT 컬럼1활용, 컬럼2활용, ... FROM 가상테이블명 WHERE 컬럼 < 숫자 -- 여기서 반복 멈추는 조건
+  UNION ALL # UNION이 사용될 수도 있음
+  SELECT 컬럼1활용, 컬럼2활용, ... FROM 가상테이블명 WHERE 컬럼 < 숫자 # 여기서 반복 멈추는 조건
 )
 SELECT 컬럼A, 컬럼B, 컬럼C, ... FROM 가상테이블명
 ```
 이렇게 구성 되어있다.  
 좀 더 이해를 위해 예시를 보자  
 ```
-SET SESSION cte_max_recursion_depth = 1000000; ---  1
+SET SESSION cte_max_recursion_depth = 1000000; ##  1
 
-INSERT INTO users (name, age) ---  4
-WITH RECURSIVE cte (n) AS   ---  2
+INSERT INTO users (name, age) ##  4
+WITH RECURSIVE cte (n) AS   ##  2
 (
   SELECT 1
   UNION ALL
   SELECT n + 1 FROM cte WHERE n < 1000000
 )
-SELECT ---  3
+SELECT ##  3
     CONCAT('User', LPAD(n, 7, '0')),
     FLOOR(1 + RAND() * 1000) AS age
 FROM cte;
