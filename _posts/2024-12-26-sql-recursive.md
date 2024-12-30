@@ -16,7 +16,7 @@ MySQL 기준으로 코드를 작성했습니다.
 재귀를 통한 반복으로 데이터를 반복 삽입 등에 활용이 됨  
 <br/>
 **기본 양식**
-```
+```sql
 WITH RECURSIVE 가상테이블명(컬럼1, 컬럼2, ...) AS
 (
   SELECT 컬럼1활용, 컬럼2활용, ...
@@ -27,7 +27,7 @@ SELECT 컬럼A, 컬럼B, 컬럼C, ... FROM 가상테이블명
 ```
 이렇게 구성 되어있다.  
 좀 더 이해를 위해 예시를 보자  
-```
+```sql
 SET SESSION cte_max_recursion_depth = 1000000; ##  1
 
 INSERT INTO users (name, age) ##  4
