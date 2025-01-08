@@ -43,16 +43,7 @@ List에 [라, 라이, 라이터] , [라, 라이, 라이더, 라이더자, 라이
 이렇게 담긴다.  
 <br>
 List에 담긴 분할된 글자들을 Redis의 key로 설정하고 value값을 넣는다.  
-* 라 : [라이터]  
-  라이 : [라이터]  
-  라이터 : [라이터]  
-* 라 : [라이터, 라이더자켓]  
-  라이 : [라이터, 라이더자켓]  
-  라이더 : [라이더자켓]  
-  라이더자 : [라이더자켓]  
-  라이더자켓 : [라이더자켓]  
-
-여기서 "라"와 "라이"는 둘다 일치하므로 한 ZSet에 담는다.  
+아래는 Redis에 자동완성 데이터 삽입 코드다.  
 ```java
 @Service
 @RequiredArgsConstructor
@@ -70,3 +61,37 @@ public class SearchProductService {
     }
 }
 ```
+"라이터", "라이더자켓" 순으로 넣으면
+* 라 : [라이터]  
+  라이 : [라이터]  
+  라이터 : [라이터]  
+* 라 : [라이더자켓, 라이터]  
+  라이 : [라이더자켓, 라이터]  
+  라이더 : [라이더자켓]  
+  라이더자 : [라이더자켓]  
+  라이더자켓 : [라이더자켓]  
+
+여기서 "라"와 "라이"는 둘다 일치하므로 한 ZSet에 담는다.  
+그리고 "라이더자켓"이 "라이터"보다 글자 오름차순이다.  
+<br>
+opsForZSet()은 ZSet을 가리키며  
+add에서 (key, value, score) 순서대로 넣는다.  
+필자는 score에 max int 값을 넣고 해당 자동완성 데이터 선택시 -1씩 숫자를 줄여 우선순위를 높였다.  
+<br>
+Redis에 담긴 키를 호출시 아래코드는 이렇다.  
+```java
+ private static final String AUTO_COMPLETE_KEY = "autocomplete:";
+
+ public List<String> getAutoComplete(String keyword) {
+      String redisKey = AUTO_COMPLETE_KEY + keyword; // 호출할 키
+
+      return redisTemplate.opsForZSet().range(redisKey, 0, 9);
+}
+```
+* "라" 입력시 [라이더자켓, 라이터]가 출력  
+* "라이" 입력시 [라이더자켓, 라이터]가 출력  
+* "라이터" 입력시 [라이터]가 출력  
+<br>
+* range에서 (key, start, end) 이렇게 값을 넣고  
+  ZSet에 담긴 리스트의 index 0번부터 9번까지 총 10개의 데이터만 호출  
+* range에서 전체를 불러오고 싶을 땐 end에 -1을 넣는다. 
