@@ -67,7 +67,7 @@ SELECT *
 FROM table_name  
 WHERE create_date BETWEEN '2025-01-07 00:00:00' AND '2025-01-08 00:00:00';
 ```
-데이터를 찾을 시 'PARTITION p202501 VALUES LESS THAN (TO_DAYS('2025-02-01'))' 의 범위 안에 들어므로 해당 파티션 기준으로 데이터를 빨리 찾게 된다.  
+데이터를 찾을 시 *PARTITION p202501 VALUES LESS THAN (TO_DAYS('2025-02-01'))* 의 범위 안에 들어므로 해당 파티션 기준으로 데이터를 빨리 찾게 된다.  
 ![파티션 결과](/assets/images/db/partition.PNG)  
 해당 이미지의 partitions를 보면 파티션 p202501을 사용했다는 것을 확인할 수 있다.  
 
