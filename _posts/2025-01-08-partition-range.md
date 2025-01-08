@@ -36,8 +36,8 @@ CREATE TABLE table_name (
   PRIMARY KEY (`id`, `create_date`) # 1
 )
 PARTITION BY RANGE (TO_DAYS(create_date)) (
-    PARTITION p0 VALUES LESS THAN (TO_DAYS('2025-01-01')), # 3
-    PARTITION p1 VALUES LESS THAN (TO_DAYS('2025-02-01')) # 4
+    PARTITION p202412 VALUES LESS THAN (TO_DAYS('2025-01-01')), # 3
+    PARTITION p202501 VALUES LESS THAN (TO_DAYS('2025-02-01')) # 4
 );
 ```
 테이블 생성시 파티셔닝 생성과 함께 만들어야한다.  
@@ -55,7 +55,7 @@ Oracle이나 PostgreSQL은 테이블만 만들어 놓고 나중에 따로 파티
 
 * 만약 파티션을 추가하고 싶으면
 ```sql
-ALTER TABLE table_name ADD PARTITION (PARTITION p2 VALUES LESS THAN (TO_DAYS('2025-03-01')));
+ALTER TABLE table_name ADD PARTITION (PARTITION p202502 VALUES LESS THAN (TO_DAYS('2025-03-01')));
 ```
 이렇게 추가하면 된다.  
 * 파티션 날짜가 '2025-02-01' 이전까지 설정되어 있으면 데이터 삽입시 '2025-02-01'부터 이후의 데이터는 삽입할 수 없다. 파티션을 더 추가해야한다.
@@ -65,6 +65,12 @@ ALTER TABLE table_name ADD PARTITION (PARTITION p2 VALUES LESS THAN (TO_DAYS('20
 ```sql
 SELECT *  
 FROM table_name  
-WHERE create_date BETWEEN '2025-01-07 00:00:00' and '2025-01-08 00:00:00';
+WHERE create_date BETWEEN '2025-01-07 00:00:00' AND '2025-01-08 00:00:00';
 ```
-데이터를 찾을 시 'PARTITION p1 VALUES LESS THAN (TO_DAYS('2025-02-01'))' 의 범위 안에 들어므로 해당 파티션 기준으로 데이터를 빨리 찾게 된다.  
+데이터를 찾을 시 'PARTITION p202501 VALUES LESS THAN (TO_DAYS('2025-02-01'))' 의 범위 안에 들어므로 해당 파티션 기준으로 데이터를 빨리 찾게 된다.  
+![파티션 결과](/assets/images/db/partition.PNG)  
+해당 이미지의 partitions를 보면 파티션 p202501을 사용했다는 것을 확인할 수 있다.  
+
+### 참고2
+파티션 키를 가공하면 파티셔닝에 적용이 안될 수 있으니 주의하자.  
+ex) year(create_date)
