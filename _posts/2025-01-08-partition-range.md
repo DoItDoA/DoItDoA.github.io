@@ -63,7 +63,7 @@ ALTER TABLE table_name ADD PARTITION (PARTITION p2 VALUES LESS THAN (TO_DAYS('20
 * 파티션은 최대 1024개까지 추가가 된다.
 
 ```sql
-'SELECT *  
+SELECT *  
 FROM table_name  
 WHERE create_date BETWEEN '2025-01-07 00:00:00' and '2025-01-08 00:00:00';
 ```
