@@ -60,7 +60,9 @@ ALTER TABLE table_name ADD PARTITION (PARTITION p202502 VALUES LESS THAN (TO_DAY
 이렇게 추가하면 된다.  
 * 파티션 날짜가 '2025-02-01' 이전까지 설정되어 있으면 데이터 삽입시 '2025-02-01'부터 이후의 데이터는 삽입할 수 없다.  
   파티션을 더 추가해야한다.
-* 만일 파티션을 더 추가하지 않고 끝내고 싶으면 'PARTITION p_max VALUES LESS THAN MAXVALUE' 추가하여 최대치 파티션을 생성한다.
+* 만일 파티션을 더 추가하지 않고 끝내고 싶으면
+  'PARTITION p_max VALUES LESS THAN MAXVALUE'
+  추가하여 최대치 파티션을 생성한다.
 * 파티션은 최대 1024개까지 추가가 된다.
 
 ```sql
@@ -69,6 +71,7 @@ FROM table_name
 WHERE create_date BETWEEN '2025-01-07 00:00:00' AND '2025-01-08 00:00:00';
 ```
 데이터를 찾을 시 파티션 p202501의 범위 안에 들어므로 해당 파티션 기준으로 데이터를 빨리 찾게 된다.  
+<br>
 실행 계획으로 아래코드 실행시  
 ```sql
 EXPLAIN SELECT *  
